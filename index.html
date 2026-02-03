@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vape.store</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #050505;
+            --surface: rgba(20, 20, 20, 0.6);
+            --surface-solid: #141414;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-muted: #888888;
+            --accent: #ff3b30;
+            --accent-glow: rgba(255, 59, 48, 0.3);
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.08), transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 59, 48, 0.05), transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.05), transparent 40%);
+            pointer-events: none;
+            z-index: -1;
+            animation: gradientShift 20s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Glassmorphism Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .lang-switcher {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .lang-option {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid transparent;
+        }
+
+        .lang-option:hover,
+        .lang-option.active {
+            color: var(--text);
+            border-color: var(--glass-border);
+            background: var(--glass);
+        }
+
+        .cart-trigger {
+            position: relative;
+            cursor: pointer;
+            padding: 12px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .cart-trigger:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.65rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        main {
+            padding-top: 120px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .product-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+            width: 100%;
+        }
+
+        /* Glass Card Product Visual */
+        .product-visual {
+            position: relative;
+            aspect-ratio: 1;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .product-visual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Placeholder Image */
+        .product-image-placeholder {
+            width: 60%;
+            height: 60%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.02) 10px,
+                rgba(255, 255, 255, 0.02) 20px
+            );
+        }
+
+        .placeholder-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .placeholder-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .product-info h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .product-meta {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .price span {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .option-group {
+            margin-bottom: 28px;
+        }
+
+        .option-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .flavors {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .flavor-tag {
+            padding: 12px 24px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .flavor-tag:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .flavor-tag.selected {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nicotine-options {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nicotine-tag {
+            padding: 12px 28px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .nicotine-tag:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nicotine-tag.selected {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .stock-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            padding: 16px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .stock-dot {
+            width: 8px;
+            height: 8px;
+            background: #30d158;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px #30d158;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
+
+        .add-btn {
+            width: 100%;
+            padding: 22px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .add-btn:hover::before {
+            left: 100%;
+        }
+
+        .add-btn:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .add-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .features {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .feature {
+            padding: 24px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .feature:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .feature-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .feature-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Glass Cart */
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s;
+        }
+
+        .cart-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 450px;
+            max-width: 100%;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-left: 1px solid var(--glass-border);
+            z-index: 201;
+            transform: translateX(100%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-overlay.active .cart-drawer {
+            transform: translateX(0);
+        }
+
+        .cart-header {
+            padding: 30px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .close-cart {
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.3s;
+            font-size: 1.8rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .close-cart:hover {
+            opacity: 1;
+            background: var(--glass);
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .cart-item:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            background: var(--surface-solid);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .cart-item-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cart-item-name {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .cart-item-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .cart-item-price {
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .qty-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .qty-value {
+            min-width: 30px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .remove-item {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            display: inline-block;
+            transition: color 0.3s;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .remove-item:hover {
+            color: var(--accent);
+        }
+
+        .cart-footer {
+            padding: 30px;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(5, 5, 5, 0.5);
+            backdrop-filter: blur(20px);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 1.3rem;
+            font-weight: 500;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 20px var(--accent-glow);
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .checkout-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Glass Checkout */
+        .checkout-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(20px);
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s;
+            overflow-y: auto;
+        }
+
+        .checkout-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .checkout-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        .checkout-header {
+            margin-bottom: 40px;
+        }
+
+        .checkout-header h2 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .checkout-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            transition: color 0.3s;
+            padding: 12px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 18px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .contact-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .contact-option {
+            position: relative;
+        }
+
+        .contact-option input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .contact-option label {
+            display: block;
+            padding: 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-option input:checked + label {
+            border-color: var(--text);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Basic Time Picker UI */
+        .time-picker-container {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+        }
+
+        .datetime-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .datetime-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .datetime-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
+
+        /* Customizing the native date/time inputs */
+        input[type="date"],
+        input[type="time"] {
+            width: 100%;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color-scheme: dark; /* Ensures dark calendar/clock popups */
+        }
+
+        input[type="date"]:hover,
+        input[type="time"]:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        input[type="date"]:focus,
+        input[type="time"]:focus {
+            outline: none;
+            border-color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Webkit calendar icon styling */
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        ::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        .location-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .location-card h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .map-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .map-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .map-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .order-summary {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .summary-row.total {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--glass-border);
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .place-order-btn {
+            width: 100%;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            color: var(--text);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .place-order-btn:hover:not(:disabled) {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .place-order-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s;
+        }
+
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-content {
+            text-align: center;
+            padding: 40px;
+            max-width: 500px;
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 40px;
+            font-size: 3rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .success-content h2 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .success-content p {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .success-details {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 40px;
+            text-align: left;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 1rem;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .done-btn {
+            padding: 18px 50px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border-radius: 16px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            backdrop-filter: blur(10px);
+        }
+
+        .done-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-cart-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            opacity: 0.3;
+        }
+
+        /* Language Selector with Flags */
+        .lang-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(30px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.6s;
+        }
+
+        .lang-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lang-selector {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .lang-selector h2 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+            color: var(--text);
+        }
+
+        .lang-options {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .lang-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            min-width: 180px;
+        }
+
+        .lang-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .flag-container {
+            width: 100px;
+            height: 70px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .flag-svg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .lang-name {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (max-width: 968px) {
+            .product-section {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .product-visual {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-options {
+                grid-template-columns: 1fr;
+            }
+
+            .lang-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .datetime-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            header {
+                padding: 15px 20px;
+            }
+
+            .product-info h1 {
+                font-size: 2.5rem;
+            }
+
+            .cart-drawer {
+                width: 100%;
+            }
+
+            .lang-card {
+                padding: 30px 40px;
+                min-width: 150px;
+            }
+
+            .flag-container {
+                width: 80px;
+                height: 55px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-overlay" id="langOverlay">
+        <div class="lang-selector">
+            <h2 id="langTitle">Select Your Language</h2>
+            <div class="lang-options">
+                <div class="lang-card" onclick="setLanguage('en')">
+                    <div class="flag-container">
+                        <svg class="flag-svg" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <clipPath id="rounded">
+                                    <rect width="60" height="40" rx="4"/>
+                                </clipPath>
+                            </defs>
+                            <g clip-path="url(#rounded)">
+                                <rect width="60" height="40" fill="#012169"/>
+                                <path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" stroke-width="8"/>
+                                <path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" stroke-width="5"/>
+                                <path d="M30,0 V40 M0,20 H60" stroke="#fff" stroke-width="12"/>
+                                <path d="M30,0 V40 M0,20 H60" stroke="#C8102E" stroke-width="8"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="lang-name">English</span>
+                </div>
+
+                <div class="lang-card" onclick="setLanguage('ru')">
+                    <div class="flag-container">
+                        <svg class="flag-svg" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <clipPath id="rounded2">
+                                    <rect width="60" height="40" rx="4"/>
+                                </clipPath>
+                            </defs>
+                            <g clip-path="url(#rounded2)">
+                                <rect width="60" height="13.33" fill="#fff"/>
+                                <rect y="13.33" width="60" height="13.33" fill="#0039A6"/>
+                                <rect y="26.66" width="60" height="13.34" fill="#D52B1E"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="lang-name">Русский</span>
+                </div>
+
+                <div class="lang-card" onclick="setLanguage('lt')">
+                    <div class="flag-container">
+                        <svg class="flag-svg" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <clipPath id="rounded3">
+                                    <rect width="60" height="40" rx="4"/>
+                                </clipPath>
+                            </defs>
+                            <g clip-path="url(#rounded3)">
+                                <rect width="60" height="13.33" fill="#FFB81C"/>
+                                <rect y="13.33" width="60" height="13.33" fill="#006A44"/>
+                                <rect y="26.66" width="60" height="13.34" fill="#C1272D"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="lang-name">Lietuvių</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo">vape.store</div>
+        <div class="lang-switcher">
+            <span class="lang-option" onclick="showLangSelector()">EN</span>
+            <span class="lang-option" onclick="showLangSelector()">RU</span>
+            <span class="lang-option" onclick="showLangSelector()">LT</span>
+        </div>
+        <div class="cart-trigger" onclick="toggleCart()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 6h15l-1.5 9h-12z"></path>
+                <circle cx="9" cy="20" r="1"></circle>
+                <circle cx="18" cy="20" r="1"></circle>
+                <path d="M6 6L5 3H2"></path>
+            </svg>
+            <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="product-section animate-in">
+                <div class="product-visual">
+                    <div class="product-image-placeholder">
+                        <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-dasharray="4 2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        <span class="placeholder-text">Image Unavailable</span>
+                    </div>
+                </div>
+                
+                <div class="product-info">
+                    <h1 id="productName">E-Juice</h1>
+                    <div class="product-meta" id="productMeta">Premium Vape Liquid • 10ml</div>
+                    
+                    <div class="price">
+                        <span id="priceAmount">€5.00</span>
+                        <span id="perBottle">per bottle</span>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label" id="flavorLabel">Flavor</div>
+                        <div class="flavors">
+                            <span class="flavor-tag selected" data-flavor="Strawberry" onclick="selectFlavor(this)">Strawberry</span>
+                            <span class="flavor-tag" data-flavor="Menthol" onclick="selectFlavor(this)">Menthol</span>
+                            <span class="flavor-tag" data-flavor="Tobacco" onclick="selectFlavor(this)">Tobacco</span>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <div class="option-label" id="nicotineLabel">Nicotine Strength</div>
+                        <div class="nicotine-options">
+                            <span class="nicotine-tag selected" data-nicotine="20" onclick="selectNicotine(this)">20mg</span>
+                            <span class="nicotine-tag" data-nicotine="50" onclick="selectNicotine(this)">50mg</span>
+                        </div>
+                    </div>
+
+                    <div class="stock-indicator">
+                        <span class="stock-dot"></span>
+                        <span id="stockText">In Stock — Ready for pickup</span>
+                    </div>
+
+                    <button class="add-btn" id="addBtn" onclick="addToCart()">Add to Cart</button>
+
+                    <div class="features">
+                        <div class="feature">
+                            <div class="feature-label" id="nicotineFeatureLabel">Nicotine</div>
+                            <div class="feature-value" id="nicotineFeatureValue">20mg</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-label">VG/PG</div>
+                            <div class="feature-value">70/30</div>
+                        </div>
+                        <div class="feature">
+                            <div class="feature-label" id="pickupLabel">Pickup</div>
+                            <div class="feature-value" id="pickupValue">Vilnius</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="cart-overlay" id="cartOverlay" onclick="closeCartOnOverlay(event)">
+        <div class="cart-drawer" onclick="event.stopPropagation()">
+            <div class="cart-header">
+                <h2 id="cartTitle">Your Cart</h2>
+                <span class="close-cart" onclick="toggleCart()">×</span>
+            </div>
+            
+            <div class="cart-items" id="cartItems">
+                <div class="empty-cart">
+                    <svg class="empty-cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <path d="M6 6h15l-1.5 9h-12z"/>
+                        <circle cx="9" cy="20" r="1"/>
+                        <circle cx="18" cy="20" r="1"/>
+                        <path d="M6 6L5 3H2"/>
+                    </svg>
+                    <p id="emptyCartText">Your cart is empty</p>
+                </div>
+            </div>
+            
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <div class="cart-total">
+                    <span id="totalLabel">Total</span>
+                    <span id="cartTotal">€0.00</span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-overlay" id="checkoutOverlay">
+        <div class="checkout-container">
+            <a href="#" class="back-link" onclick="closeCheckout(); return false;" id="backLink">
+                ← Back to cart
+            </a>
+            
+            <div class="checkout-header">
+                <h2 id="checkoutTitle">Complete Order</h2>
+                <p id="checkoutSubtitle">Cash payment on pickup</p>
+            </div>
+
+            <form id="checkoutForm">
+                <div class="form-section">
+                    <div class="form-section-title" id="contactLabel">Contact Method</div>
+                    <div class="contact-options">
+                        <div class="contact-option">
+                            <input type="radio" name="contactType" id="snapchat" value="Snapchat" checked>
+                            <label for="snapchat">Snapchat</label>
+                        </div>
+                        <div class="contact-option">
+                            <input type="radio" name="contactType" id="telegram" value="Telegram">
+                            <label for="telegram">Telegram</label>
+                        </div>
+                        <div class="contact-option">
+                            <input type="radio" name="contactType" id="whatsapp" value="WhatsApp">
+                            <label for="whatsapp">WhatsApp</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 20px;">
+                        <input type="text" id="contactHandle" placeholder="@username" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title" id="scheduleLabel">Pickup Schedule</div>
+                    
+                    <div class="time-picker-container">
+                        <div class="datetime-row">
+                            <div class="datetime-group">
+                                <label id="dateLabel">Date</label>
+                                <input type="date" id="dateInput" required>
+                            </div>
+                            <div class="datetime-group">
+                                <label id="timeLabel">Time</label>
+                                <input type="time" id="timeInput" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="location-card">
+                    <h3>📍 <span id="locationTitle">Pickup Location</span></h3>
+                    <p>54.712862, 25.283285<br>Vilnius, Lithuania</p>
+                    <a href="https://maps.google.com/?q=54.712862,25.283285" target="_blank" class="map-link">
+                        <svg class="map-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span id="mapText">Open in Google Maps</span>
+                    </a>
+                </div>
+
+                <div class="order-summary">
+                    <div class="form-section-title" style="margin-bottom: 20px;" id="summaryLabel">Order Summary</div>
+                    <div id="orderSummary"></div>
+                    <div class="summary-row total">
+                        <span id="summaryTotal">Total</span>
+                        <span id="checkoutTotal">€0.00</span>
+                    </div>
+                </div>
+
+                <input type="hidden" id="pickupDateTime">
+
+                <button type="submit" class="place-order-btn" id="placeOrderBtn">
+                    Place Order
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h2 id="successTitle">Order Confirmed</h2>
+            <p id="successText">We'll message you to confirm the details.</p>
+            
+            <div class="success-details" id="successDetails"></div>
+            
+            <button class="done-btn" id="doneBtn" onclick="closeSuccess()">Done</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let selectedFlavor = 'Strawberry';
+        let selectedNicotine = '20';
+        let currentLang = 'en';
+        
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1467960995648373048/fY2CFnH6I2StR4koWMCBy_GBcJXbwtWzU6x2qNyiO1Acg4TS_lDzm21dNBexEVcUEFbI';
+        
+        const translations = {
+            en: {
+                langTitle: 'Select Your Language',
+                productName: 'E-Juice',
+                productMeta: 'Premium Vape Liquid • 10ml',
+                perBottle: 'per bottle',
+                flavorLabel: 'Flavor',
+                nicotineLabel: 'Nicotine Strength',
+                stockText: 'In Stock — Ready for pickup',
+                addToCart: 'Add to Cart',
+                nicotineFeatureLabel: 'Nicotine',
+                pickupLabel: 'Pickup',
+                pickupValue: 'Vilnius',
+                cartTitle: 'Your Cart',
+                emptyCart: 'Your cart is empty',
+                total: 'Total',
+                checkout: 'Checkout',
+                backToCart: '← Back to cart',
+                checkoutTitle: 'Complete Order',
+                checkoutSubtitle: 'Cash payment on pickup',
+                contactLabel: 'Contact Method',
+                contactPlaceholder: '@username',
+                scheduleLabel: 'Pickup Schedule',
+                dateLabel: 'Date',
+                timeLabel: 'Time',
+                locationTitle: 'Pickup Location',
+                mapText: 'Open in Google Maps',
+                summaryLabel: 'Order Summary',
+                placeOrder: 'Place Order',
+                successTitle: 'Order Confirmed',
+                successText: "We'll message you to confirm the details.",
+                done: 'Done'
+            },
+            ru: {
+                langTitle: 'Выберите язык',
+                productName: 'E-Juice',
+                productMeta: 'Премиум жидкость • 10мл',
+                perBottle: 'за бутылку',
+                flavorLabel: 'Вкус',
+                nicotineLabel: 'Крепость никотина',
+                stockText: 'В наличии — Готов к получению',
+                addToCart: 'В корзину',
+                nicotineFeatureLabel: 'Никотин',
+                pickupLabel: 'Самовывоз',
+                pickupValue: 'Вильнюс',
+                cartTitle: 'Корзина',
+                emptyCart: 'Корзина пуста',
+                total: 'Итого',
+                checkout: 'Оформить',
+                backToCart: '← Назад',
+                checkoutTitle: 'Оформление заказа',
+                checkoutSubtitle: 'Оплата наличными при получении',
+                contactLabel: 'Способ связи',
+                contactPlaceholder: '@username или телефон',
+                scheduleLabel: 'Время получения',
+                dateLabel: 'Дата',
+                timeLabel: 'Время',
+                locationTitle: 'Место получения',
+                mapText: 'Открыть в Google Maps',
+                summaryLabel: 'Состав заказа',
+                placeOrder: 'Подтвердить заказ',
+                successTitle: 'Заказ оформлен',
+                successText: 'Мы напишем вам для подтверждения деталей.',
+                done: 'Готово'
+            },
+            lt: {
+                langTitle: 'Pasirinkite kalbą',
+                productName: 'E-Juice',
+                productMeta: 'Premium skystis • 10ml',
+                perBottle: 'vienam buteliukui',
+                flavorLabel: 'Skonis',
+                nicotineLabel: 'Nikotino stiprumas',
+                stockText: 'Yra sandėlyje — Paruošta atsiėmimui',
+                addToCart: 'Į krepšelį',
+                nicotineFeatureLabel: 'Nikotinas',
+                pickupLabel: 'Atsiėmimas',
+                pickupValue: 'Vilnius',
+                cartTitle: 'Jūsų krepšelis',
+                emptyCart: 'Krepšelis tuščias',
+                total: 'Viso',
+                checkout: 'Toliau',
+                backToCart: '← Atgal',
+                checkoutTitle: 'Užsakymo patvirtinimas',
+                checkoutSubtitle: 'Mokėjimas grynaisiais atsiimant',
+                contactLabel: 'Kontaktas',
+                contactPlaceholder: '@vartotojas arba telefonas',
+                scheduleLabel: 'Atsiėmimo laikas',
+                dateLabel: 'Data',
+                timeLabel: 'Laikas',
+                locationTitle: 'Atsiėmimo vieta',
+                mapText: 'Atidaryti Google Maps',
+                summaryLabel: 'Užsakymo santrauka',
+                placeOrder: 'Patvirtinti užsakymą',
+                successTitle: 'Užsakymas priimtas',
+                successText: 'Parašysime jums dėl detalių patvirtinimo.',
+                done: 'Baigti'
+            }
+        };
+
+        function initDateTime() {
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateInput').value = today;
+            document.getElementById('dateInput').min = today;
+            
+            // Set default time to 14:00
+            document.getElementById('timeInput').value = "14:00";
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('langOverlay').classList.add('hidden');
+            
+            document.getElementById('productName').textContent = t.productName;
+            document.getElementById('productMeta').textContent = t.productMeta;
+            document.getElementById('perBottle').textContent = t.perBottle;
+            document.getElementById('flavorLabel').textContent = t.flavorLabel;
+            document.getElementById('nicotineLabel').textContent = t.nicotineLabel;
+            document.getElementById('stockText').textContent = t.stockText;
+            document.getElementById('addBtn').textContent = t.addToCart;
+            document.getElementById('nicotineFeatureLabel').textContent = t.nicotineFeatureLabel;
+            document.getElementById('pickupLabel').textContent = t.pickupLabel;
+            document.getElementById('pickupValue').textContent = t.pickupValue;
+            document.getElementById('cartTitle').textContent = t.cartTitle;
+            document.getElementById('emptyCartText').textContent = t.emptyCart;
+            document.getElementById('totalLabel').textContent = t.total;
+            document.getElementById('checkoutBtn').textContent = t.checkout;
+            document.getElementById('backLink').textContent = t.backToCart;
+            document.getElementById('checkoutTitle').textContent = t.checkoutTitle;
+            document.getElementById('checkoutSubtitle').textContent = t.checkoutSubtitle;
+            document.getElementById('contactLabel').textContent = t.contactLabel;
+            document.getElementById('contactHandle').placeholder = t.contactPlaceholder;
+            document.getElementById('scheduleLabel').textContent = t.scheduleLabel;
+            document.getElementById('dateLabel').textContent = t.dateLabel;
+            document.getElementById('timeLabel').textContent = t.timeLabel;
+            document.getElementById('locationTitle').textContent = t.locationTitle;
+            document.getElementById('mapText').textContent = t.mapText;
+            document.getElementById('summaryLabel').textContent = t.summaryLabel;
+            document.getElementById('summaryTotal').textContent = t.total;
+            document.getElementById('placeOrderBtn').textContent = t.placeOrder;
+            document.getElementById('successTitle').textContent = t.successTitle;
+            document.getElementById('successText').textContent = t.successText;
+            document.getElementById('doneBtn').textContent = t.done;
+        }
+
+        function showLangSelector() {
+            document.getElementById('langOverlay').classList.remove('hidden');
+        }
+
+        function selectFlavor(element) {
+            document.querySelectorAll('.flavor-tag').forEach(tag => {
+                tag.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedFlavor = element.dataset.flavor;
+        }
+
+        function selectNicotine(element) {
+            document.querySelectorAll('.nicotine-tag').forEach(tag => {
+                tag.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedNicotine = element.dataset.nicotine;
+            document.getElementById('nicotineFeatureValue').textContent = element.dataset.nicotine + 'mg';
+        }
+
+        function addToCart() {
+            const btn = document.getElementById('addBtn');
+            btn.disabled = true;
+            
+            const existingItem = cart.find(item => item.flavor === selectedFlavor && item.nicotine === selectedNicotine);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: 'ejuice-' + selectedFlavor + '-' + selectedNicotine,
+                    name: 'E-Juice',
+                    flavor: selectedFlavor,
+                    nicotine: selectedNicotine,
+                    price: 5,
+                    quantity: 1,
+                    size: '10ml'
+                });
+            }
+            
+            updateCart();
+            toggleCart();
+            
+            setTimeout(() => {
+                btn.disabled = false;
+            }, 500);
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const cartFooter = document.getElementById('cartFooter');
+            const cartTotal = document.getElementById('cartTotal');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <svg class="empty-cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <path d="M6 6h15l-1.5 9h-12z"/>
+                            <circle cx="9" cy="20" r="1"/>
+                            <circle cx="18" cy="20" r="1"/>
+                            <path d="M6 6L5 3H2"/>
+                        </svg>
+                        <p id="emptyCartText">${translations[currentLang].emptyCart}</p>
+                    </div>
+                `;
+                cartFooter.style.display = 'none';
+                cartCount.textContent = '0';
+                return;
+            }
+            
+            cartItems.innerHTML = '';
+            let total = 0;
+            let count = 0;
+            
+            cart.forEach((item, index) => {
+                total += item.price * item.quantity;
+                count += item.quantity;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <div class="cart-item-img">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="opacity: 0.5;">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                    </div>
+                    <div class="cart-item-details">
+                        <div>
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-meta">${item.flavor} • ${item.nicotine}mg</div>
+                            <div class="cart-item-price">€${item.price.toFixed(2)} / ${item.size}</div>
+                        </div>
+                        <div class="quantity-control">
+                            <button class="qty-btn" onclick="updateQuantity(${index}, -1)">−</button>
+                            <span class="qty-value">${item.quantity}</span>
+                            <button class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                        <span class="remove-item" onclick="removeItem(${index})">Remove</span>
+                    </div>
+                `;
+                cartItems.appendChild(itemDiv);
+            });
+            
+            cartCount.textContent = count;
+            cartTotal.textContent = `€${total.toFixed(2)}`;
+            cartFooter.style.display = 'block';
+            
+            updateOrderSummary();
+        }
+
+        function updateQuantity(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCart();
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function updateOrderSummary() {
+            const orderSummary = document.getElementById('orderSummary');
+            const checkoutTotal = document.getElementById('checkoutTotal');
+            
+            if (!orderSummary) return;
+            
+            orderSummary.innerHTML = '';
+            let total = 0;
+            
+            cart.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                
+                const row = document.createElement('div');
+                row.className = 'summary-row';
+                row.innerHTML = `
+                    <span>${item.name} (${item.flavor}, ${item.nicotine}mg) × ${item.quantity}</span>
+                    <span>€${subtotal.toFixed(2)}</span>
+                `;
+                orderSummary.appendChild(row);
+            });
+            
+            checkoutTotal.textContent = `€${total.toFixed(2)}`;
+        }
+
+        function toggleCart() {
+            const overlay = document.getElementById('cartOverlay');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = overlay.classList.contains('active') ? 'hidden' : '';
+        }
+
+        function closeCartOnOverlay(e) {
+            if (e.target === e.currentTarget) {
+                toggleCart();
+            }
+        }
+
+        function openCheckout() {
+            toggleCart();
+            document.getElementById('checkoutOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            updateOrderSummary();
+        }
+
+        function closeCheckout() {
+            document.getElementById('checkoutOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            toggleCart();
+        }
+
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('placeOrderBtn');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            
+            const contactType = document.querySelector('input[name="contactType"]:checked').value;
+            const contactHandle = document.getElementById('contactHandle').value;
+            
+            // Get date and time from the new inputs
+            const dateStr = document.getElementById('dateInput').value;
+            const timeStr = document.getElementById('timeInput').value;
+            const pickupDateTime = new Date(dateStr + 'T' + timeStr);
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            const embed = {
+                title: "🛒 New Order Received",
+                color: 0xff3b30,
+                timestamp: new Date().toISOString(),
+                fields: [
+                    {
+                        name: "📦 Order Items",
+                        value: cart.map((item, i) => 
+                            `**${i + 1}.** ${item.name}\n   Flavor: ${item.flavor}\n   Nicotine: ${item.nicotine}mg\n   Qty: ${item.quantity} × €${item.price.toFixed(2)} = €${(item.price * item.quantity).toFixed(2)}`
+                        ).join('\n\n'),
+                        inline: false
+                    },
+                    {
+                        name: "💰 Total Amount",
+                        value: `**€${total.toFixed(2)}** (Cash on pickup)`,
+                        inline: true
+                    },
+                    {
+                        name: "📱 Contact",
+                        value: `**Platform:** ${contactType}\n**Handle:** ${contactHandle}`,
+                        inline: true
+                    },
+                    {
+                        name: "📍 Pickup Details",
+                        value: `**Date:** ${pickupDateTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}\n**Time:** ${pickupDateTime.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: false})}\n**Location:** [54.712862, 25.283285](https://maps.google.com/?q=54.712862,25.283285)\nVilnius, Lithuania`,
+                        inline: false
+                    }
+                ],
+                footer: {
+                    text: "vape.store • Order System"
+                }
+            };
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ embeds: [embed] })
+                });
+                
+                if (response.ok) {
+                    showSuccess(contactType, contactHandle, pickupDateTime, total);
+                } else {
+                    throw new Error('Failed');
+                }
+            } catch (error) {
+                btn.textContent = 'Error. Try Again';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.textContent = translations[currentLang].placeOrder;
+                }, 2000);
+            }
+        });
+
+        function showSuccess(contactType, contactHandle, dateTime, total) {
+            document.getElementById('checkoutOverlay').classList.remove('active');
+            document.getElementById('successOverlay').classList.add('active');
+            
+            const t = translations[currentLang];
+            const details = document.getElementById('successDetails');
+            details.innerHTML = `
+                <div class="detail-row">
+                    <span>${t.contactLabel}</span>
+                    <span>${contactType}: ${contactHandle}</span>
+                </div>
+                <div class="detail-row">
+                    <span>${t.scheduleLabel}</span>
+                    <span>${dateTime.toLocaleDateString()} at ${dateTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
+                <div class="detail-row">
+                    <span>${t.total}</span>
+                    <span>€${total.toFixed(2)} cash</span>
+                </div>
+            `;
+            
+            cart = [];
+            updateCart();
+            document.getElementById('checkoutForm').reset();
+            initDateTime(); // Reset date/time to defaults
+            document.getElementById('placeOrderBtn').disabled = false;
+            document.getElementById('placeOrderBtn').textContent = t.placeOrder;
+        }
+
+        function closeSuccess() {
+            document.getElementById('successOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('cartOverlay').classList.remove('active');
+                document.getElementById('checkoutOverlay').classList.remove('active');
+                document.getElementById('successOverlay').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Initialize date/time on load
+        document.addEventListener('DOMContentLoaded', initDateTime);
+    </script>
+</body>
+</html>
